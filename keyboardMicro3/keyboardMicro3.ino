@@ -1,19 +1,35 @@
 /*
-                        
+  micro based keyboard 3 interupts. 1-2 digital, 1 pinchange interupt?
 */ 
 #include "Keyboard.h"
 #include "button.h"
  void mclick();
  void aclick();
  void bclick();
+ void spaceL();
+ void spaceR();
+ void dt();
  
 Button x(2, aclick, true);
 Button c(3, bclick, true);
 Button v(7, mclick, true);
 
-void mclick(){ if(v.tap())  commandKey(2); }
-void aclick(){ if(x.tap())  commandKey(0); }
-void bclick(){ if(c.tap())  commandKey(1); }
+const int d = 11; //release delay
+void mclick(){ 
+    int t = v.tap();
+    if(t==1)  commandKey(2); 
+    else if(t == 2) dt();
+}
+void aclick(){ 
+    int t = v.tap();
+    if(t==1)  commandKey(0); 
+    else if(t == 2) space(1);
+}
+void bclick(){ 
+    int t = v.tap();
+    if(t==1)  commandKey(1); 
+    else if(t == 2) space(0);
+} 
 
 void setup() { 
   pinMode(13, OUTPUT);
@@ -48,8 +64,23 @@ void commandKey(int a){
 //    Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz
 //    Keyboard.press(KEY_LEFT_SHIFT);  //  hold Shift for testing. lol
     Keyboard.press(KEY_LEFT_GUI);  // press and hold command macos not X
-    Keyboard.press(c);          // press and hold F2
-    delay(11);  //fixes command click after wake.!
+    Keyboard.press(c);         
+    delay(d);  //fixes command click after wake.!
     Keyboard.releaseAll(); 
 }
- 
+
+void spaceL(){ space(0); }
+void spaceR(){ space(1); }
+void space(int d){   
+    Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz 
+     
+    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
+    delay(d);  //fixes command click after wake.!
+    Keyboard.releaseAll(); 
+}
+
+void dt(){  
+    Keyboard.press(KEY_RETURN);  
+    delay(d); 
+    Keyboard.releaseAll(); 
+}

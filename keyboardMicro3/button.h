@@ -6,7 +6,7 @@ class Button{
   public: 
      Button(int p, void* callback, bool isinterupt=false){
       pin = p;
-      clickCallback = callback;
+      clickCallback = callback; 
       isInterupt = isinterupt;
      }
     ~Button(){}
@@ -17,21 +17,22 @@ class Button{
       else  attachInterrupt( pin, clickCallback, LOW );  
     }
     //basic debounce//maybe add a double tap?
-    bool tap(){
-      long temp  = millis(); 
-      if(temp - lastClick > clickDelay){ //if(temp-lastClick < doubleTapDelay) ? that easy?
+    int tap(){
+      long temp  = millis() - lastClick; 
+      if(temp  > clickDelay){ 
         lastClick = millis();   
-        return true;
+          if(temp  < doubleTapDelay)  return 2;
+        return 1;
       }
-      return false; 
-    }
-  
+      return 0; 
+    } 
+    
   private:
     int pin = 0;
     long lastClick = 0; // for 3 interupt micros.
     long clickDelay = 50;  
     bool isInterupt;
-    void* clickCallback;
-
+    void* clickCallback; 
+    long doubleTapDelay = 250;  
 };    
 #endif
