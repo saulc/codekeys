@@ -22,13 +22,13 @@ void mclick(){
 }
 void aclick(){ 
     int t = v.tap();
-    if(t==1)  commandKey(0); 
-    else if(t == 2) space(1);
+    if(t==1)  commandKey(1); 
+    else if(t == 2) commandKey(0);
 }
 void bclick(){ 
     int t = v.tap();
-    if(t==1)  commandKey(1); 
-    else if(t == 2) space(0);
+    if(t==1)  dt(); 
+    else if(t == 2) space(2);
 } 
 
 void setup() { 
@@ -40,12 +40,16 @@ void setup() {
    c.ini(); 
    x.ini(); 
 
+//      pinMode(2, INPUT_PULLUP); 
   // initialize control over the keyboard:
   Keyboard.begin();
 }
 
+int p = 2;
+
 int t = 0;
 void loop() {  
+//  if( digitalRead(p) == LOW) spaceL();
   
 //  if(t++ > 1000)    Keyboard.releaseAll(); //fixes command click after wake.!
 }
@@ -73,8 +77,8 @@ void spaceL(){ space(0); }
 void spaceR(){ space(1); }
 void space(int d){   
     Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz 
-     
-    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
+     if(d==2) Keyboard.press(KEY_UP_ARROW);
+     else    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
     delay(d);  //fixes command click after wake.!
     Keyboard.releaseAll(); 
 }
