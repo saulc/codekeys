@@ -1,10 +1,11 @@
 #ifndef button_h
 #define button_h
 #include "Arduino.h"
+#include "PinChangeInterrupt.h"
 
 class Button{
   public: 
-     Button(int p, void* callback, bool isinterupt=false){
+     Button(int p, void* callback, bool isinterupt){
       pin = p;
       clickCallback = callback; 
       isInterupt = isinterupt;
@@ -14,8 +15,8 @@ class Button{
     void ini(){
       pinMode(pin, INPUT_PULLUP); 
       if(isInterupt) attachInterrupt(digitalPinToInterrupt(pin), clickCallback, LOW );  
-//      else  attachInterrupt( pin, clickCallback, LOW );  
-    }
+      else attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(pin), clickCallback, FALLING); 
+      }
     //basic debounce//maybe add a double tap?
     int tap(){
       long temp  = millis() - lastClick; 
