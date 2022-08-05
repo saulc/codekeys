@@ -1,5 +1,9 @@
 /*
-  micro based keyboard 3 interupts. 1-2 digital, 1 pinchange interupt?
+  micro based keyboard 3 interupts.  7 pinchange interupt?
+  spaceL  mc  spaceR  
+  comment uncomment ([0, 0, 0]) 'custom'
+  tab/return  copy/cut  paste/paste+return
+    spacebar
 */ 
 #include "Keyboard.h"
 #include "button.h"
@@ -49,7 +53,7 @@ int p = 2;
 
 int t = 0;
 void loop() {  
-//  if( digitalRead(p) == LOW) spaceL();
+//  if( digitalRead(p) == LOW) spaceL();    //to do test non interupt buttons.
   
 //  if(t++ > 1000)    Keyboard.releaseAll(); //fixes command click after wake.!
 }
@@ -66,25 +70,28 @@ void commandKey(int a){
     }
     
 //    Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz
-//    Keyboard.press(KEY_LEFT_SHIFT);  //  hold Shift for testing. lol
-    Keyboard.press(KEY_LEFT_GUI);  // press and hold command macos not X
+    Keyboard.press(KEY_LEFT_GUI);  // press and hold command macOS not X
+//    Keyboard.press(KEY_LEFT_SHIFT);  //  hold Shift for testing!! 
     Keyboard.press(c);         
-    delay(d);  //fixes command click after wake.!
-    Keyboard.releaseAll(); 
+
+    kbrelease();
 }
 
 void spaceL(){ space(0); }
 void spaceR(){ space(1); }
 void space(int d){   
     Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz 
-     if(d==2) Keyboard.press(KEY_UP_ARROW);
-     else    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
-    delay(d);  //fixes command click after wake.!
-    Keyboard.releaseAll(); 
+     if(d==2) Keyboard.press(KEY_UP_ARROW);   //spaces/mission control
+     else    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      //change spaces/destops
+    
+    kbrelease();
 }
 
 void dt(){  
     Keyboard.press(KEY_RETURN);  
-    delay(d); 
+    kbrelease();
+}
+void kbrelease(){
+    delay(d);  //fixes command click after wake.!
     Keyboard.releaseAll(); 
 }
