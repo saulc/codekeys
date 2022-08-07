@@ -5,8 +5,9 @@
   spaceL  mc  spaceR        macOS
   comment uncomment ([0, 0, 0]) 'custom openscad'
   tab/return  copy/cut  paste/paste+return
-    
-*/ 
+
+//        
+*/    
 
 #include "Keyboard.h"
 #include "button.h"
@@ -26,27 +27,28 @@ Button a3(10, three, false);
 Button b1(14, four, false);
 Button b2(15, five, false);
 Button b3(16, six, false);
-Button x(2, aclick, true);
-Button c(3, bclick, true);
-Button v(7, cclick, true);
+Button a(2, aclick, true);
+Button b(3, bclick, true);
+Button c(7, cclick, true);
 
 const int d = 11; //release delay
 //interupt callbacks
-void cclick(){ 
-    int t = v.tap();
-    if(t==1)  dt(0);
-    else if(t == 2)  dt(1); 
-}
 void aclick(){ 
-    int t = x.tap();
+    int t = a.tap();
     if(t==1)  commandKey(2); 
     else if(t == 2) dt(1);
 }
 void bclick(){ 
-    int t = c.tap();
+    int t = b.tap();
     if(t==1)  commandKey(1); 
     else if(t == 2) commandKey(0);
 }    
+void cclick(){ 
+    int t = c.tap();
+    if(t==1)  dt(0);
+    else if(t == 2)  dt(1); 
+}   
+
  //pin change interupt callbacks
 void one(void){
     int t = a1.tap();
@@ -55,12 +57,12 @@ void one(void){
 }
 void two(void){
     int t = a2.tap();
-    if(t==1) commandKey(3); 
+    if(t==1) commandKey(4); 
+    else if(t == 2) commandKey(5); 
 }
 void three(void){
     int t = a3.tap();
-    if(t==1) commandKey(4); //  
-    else if(t == 2) commandKey(5); 
+    if(t==1) commandKey(3); 
 }   
 void four(void){
     int t = b1.tap();
@@ -113,17 +115,22 @@ void commandKey(int a){
         break;
         case 5: c = '/';
         break;
-    }
+        case 6: c = 'z';
+        break;  
+        
+    }     
+    
 //    Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz
 //    Keyboard.press(KEY_RIGHT_SHIFT);  //  hold Shift for testing!! 
     Keyboard.press(KEY_LEFT_GUI);  // press and hold command macOS not X
-    Keyboard.press(c);         
-    kbrelease();
+    Keyboard.press(c);          
+        kbrelease();
 }
 //change spaces/destops
 void spaceL(){ space(0); }
 void spaceR(){ space(1); }
 void space(int d){   
+  //ctrl shift tab /ctrl tab  - switch chrome tabs left right 
     Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz 
      if(d==2) Keyboard.press(KEY_UP_ARROW);   //spaces/mission control
      else    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
