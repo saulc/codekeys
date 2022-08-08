@@ -2,7 +2,13 @@
 #define button_h
 #include "Arduino.h"
 #include "PinChangeInterrupt.h"
-
+/*
+ * Code keys v1 - 2022/8/8 Saul C.
+ * button dobounce + double tap (needs work)
+ * external and pinchange interupt pints only.
+ * 
+  */
+  
 class Button{
   public: 
      Button(int p, void* callback, bool isinterupt){
@@ -14,10 +20,14 @@ class Button{
     
     void ini(){
       pinMode(pin, INPUT_PULLUP); 
+      //no press n hold, alternate version for 'gaming response'
       if(isInterupt) attachInterrupt(digitalPinToInterrupt(pin), clickCallback, LOW );  
       else attachPinChangeInterrupt(digitalPinToPinChangeInterrupt(pin), clickCallback, FALLING); 
       }
     //basic debounce//maybe add a double tap?
+    //double tap still triggers single tap, 
+    //solutions, wait for it or undo it. 
+//    for now use 'non conflicting' double taps.
     int tap(){
       long temp  = millis() - lastClick; 
       if(temp  > clickDelay){ 

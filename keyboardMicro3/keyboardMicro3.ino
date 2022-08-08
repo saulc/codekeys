@@ -1,4 +1,6 @@
 /*
+ * Code keys v1 - 2022/8/8 Saul C.
+ * 
  * mini keyboard - code keys 3 x 3
   micro based keyboard 3 interupts.  7 pinchange interupt? 6!
   pins: int: 2,3,7 pcint: 8,9,10, 14, 15, 16   
@@ -6,27 +8,28 @@
   comment uncomment ([0, 0, 0]) 'custom openscad'
   tab/return  copy/cut  paste/paste+return
 
-//        
 */    
 
 #include "Keyboard.h"
 #include "button.h"
- void cclick();
- void aclick();
- void bclick(); 
  void one();
  void two();
  void three();
  void four();
  void five();
  void six(); 
+ void cclick();
+ void aclick();
+ void bclick(); 
  
+// pin change interups
 Button a1(8, one, false);
 Button a2(9, two, false);
 Button a3(10, three, false);
 Button b1(14, four, false);
 Button b2(15, five, false);
 Button b3(16, six, false);
+//hardware interupts
 Button a(2, aclick, true);
 Button b(3, bclick, true);
 Button c(7, cclick, true);
@@ -81,10 +84,10 @@ void setup() {
   //turn off the builtin led
   pinMode(13, OUTPUT);
   digitalWrite(13, LOW);
-   //setup interupts for buttons
-   v.ini();  
+   //initialize interupts for buttons
+   a.ini();  
+   b.ini(); 
    c.ini(); 
-   x.ini(); 
    a1.ini();
    a2.ini();
    a3.ini();
@@ -98,7 +101,9 @@ void setup() {
 void loop() {  
 //  RGB control goes here lol
 }
-
+/* 
+ * ----------------Short cuts --------------------
+ */
 void commandKey(int a){
   char c = 'x';
     switch(a){
@@ -132,8 +137,8 @@ void spaceR(){ space(1); }
 void space(int d){   
   //ctrl shift tab /ctrl tab  - switch chrome tabs left right 
     Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz 
-     if(d==2) Keyboard.press(KEY_UP_ARROW);   //spaces/mission control
-     else    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
+    if(d==2) Keyboard.press(KEY_UP_ARROW);   //spaces/mission control
+    else    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
     
     kbrelease();
 }
@@ -143,7 +148,11 @@ void dt(int a){
     else if(a == 1) Keyboard.press(KEY_RETURN);  
     else if(a == 2) Keyboard.press(KEY_BACKSPACE);  
     kbrelease();
-}
+} 
+/* 
+ * ----------------end Short cuts --------------------
+ */     
+ 
 //write keystrokes 
 void macro(String s){
   for(int i=0; i<s.length()-1; i++)
