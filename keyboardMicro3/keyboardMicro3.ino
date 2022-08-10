@@ -21,18 +21,28 @@
  void cclick();
  void aclick();
  void bclick(); 
- 
+
+const int pins[9] = { 8,  9,   10, 
+                      14, 15,  16, 
+                      2,  3,   7     };
+                      
+//todo software rotate. easy rotate...
+int rp(int i){
+  int n = i;
+    if(n % 3 == 0) 
+  return n;
+}
 // pin change interups
-Button a1(8, one, false);
-Button a2(9, two, false);
-Button a3(10, three, false);
-Button b1(14, four, false);
-Button b2(15, five, false);
-Button b3(16, six, false);
+Button a1( pins[0] , one, false);
+Button a2( pins[1] , two, false);
+Button a3( pins[2] , three, false);
+Button b1( pins[3] , four, false);
+Button b2( pins[4] , five, false);
+Button b3( pins[5] , six, false);
 //hardware interupts
-Button a(2, aclick, true);
-Button b(3, bclick, true);
-Button c(7, cclick, true);
+Button a( pins[6] , aclick, true);
+Button b( pins[7] , bclick, true);
+Button c( pins[8] , cclick, true);
 
 const int d = 11; //release delay
 //interupt callbacks
