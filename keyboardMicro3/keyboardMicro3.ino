@@ -23,8 +23,8 @@
  void bclick(); 
 
 const int pins[9] = { 8,  9,   10, 
-                      14, 15,  16, 
-                      2,  3,   7     };
+                      2,  3,   7 ,  
+                      14, 15,  16   };
                       
 //todo software rotate. easy rotate...
 int rp(int i){
@@ -37,57 +37,63 @@ Button a1( pins[0] , one, false);
 Button a2( pins[1] , two, false);
 Button a3( pins[2] , three, false);
 Button b1( pins[3] , four, false);
-Button b2( pins[4] , five, false);
-Button b3( pins[5] , six, false);
+Button b2( pins[7] , five, false);
+Button b3( pins[8] , six, false);
 //hardware interupts
-Button a( pins[6] , aclick, true);
-Button b( pins[7] , bclick, true);
-Button c( pins[8] , cclick, true);
+Button a( pins[3] , aclick, true);
+Button b( pins[4] , bclick, true);
+Button c( pins[5] , cclick, true);
 
 const int d = 11; //release delay
 //interupt callbacks
 void aclick(){ 
     int t = a.tap();
-    if(t==1)  commandKey(2); 
-    else if(t == 2) dt(1);
+    if(t==1)  ar(1); //right      
+    else if(t == 2) ar(5);
 }
 void bclick(){ 
     int t = b.tap();
-    if(t==1)  commandKey(1); 
-    else if(t == 2) commandKey(0);
+    if(t==1)   ar(3); //down    
+    else if(t==2)  for(int i=0; i<4; i++) ar(3);
 }    
 void cclick(){ 
     int t = c.tap();
-    if(t==1)  dt(0);
-    else if(t == 2)  dt(1); 
+    if(t==1)  ar(0); //left
+    else if(t == 2) ar(4);
 }   
-
+ 
  //pin change interupt callbacks
 void one(void){
     int t = a1.tap();
-    if(t==1)  macro("([0, 0, 0]) ");        
-//    else if(t == 2) dt();
-}
+    if(t==1) commandKey(6);  //
+}   
+        
 void two(void){
     int t = a2.tap();
-    if(t==1) commandKey(4); 
-    else if(t == 2) commandKey(5); 
+      if(t==1)   commandKey(2);
+    else  if(t == 2) dt(1);
 }
 void three(void){
     int t = a3.tap();
-    if(t==1) commandKey(3); 
-}   
+    if(t==1) commandKey(1); 
+    else if(t == 2) commandKey(0);
+}  
+//top row 
+
 void four(void){
     int t = b1.tap();
-    if(t==1) spaceR();
+    if(t==1) dt(2); 
 }
 void five(void){
     int t = b2.tap();
-    if(t==1) space(2);
-}
+    if(t==1) ar(2);  //up
+    else if(t==2)  for(int i=0; i<4; i++) ar(2);
+    
+} 
 void six(void){ 
     int t = b3.tap();
-    if(t==1) spaceL();
+    if(t==1) dt(0);
+    else if(t == 2)  dt(1);
 }   
 
 void setup() { 
@@ -152,6 +158,24 @@ void space(int d){
     
     kbrelease();
 }
+void ar(int a){
+  char c = 'a'; 
+  switch(a){
+    case 0: c = KEY_LEFT_ARROW; break;   
+    case 1: c = KEY_RIGHT_ARROW; break;
+    case 2: c = KEY_UP_ARROW; break;
+    case 3: c = KEY_DOWN_ARROW; break;
+    case 4: c = KEY_LEFT_ARROW; 
+              Keyboard.press(KEY_LEFT_ALT);
+              break;
+    case 5: c = KEY_RIGHT_ARROW; 
+              Keyboard.press(KEY_LEFT_ALT);
+              break;
+  }
+  Keyboard.press(c);
+  kbrelease();
+  
+}
  //single key shortcuts
 void dt(int a){  
     if(a == 0) Keyboard.press(KEY_TAB); 
@@ -162,10 +186,12 @@ void dt(int a){
 /* 
  * ----------------end Short cuts --------------------
  */     
+
+
  
 //write keystrokes 
 void macro(String s){
-  for(int i=0; i<s.length()-1; i++)
+  for(int i=0; i<s.length(); i++)
            Keyboard.write(s[i]); 
 }
 void kbrelease(){
