@@ -32,11 +32,12 @@ int rp(int i){
     if(n % 3 == 0) 
   return n;
 }
+
 // pin change interups
 Button a1( pins[0] , one, false);
 Button a2( pins[1] , two, false);
 Button a3( pins[2] , three, false);
-Button b1( pins[3] , four, false);
+Button b1( pins[6] , four, false);
 Button b2( pins[7] , five, false);
 Button b3( pins[8] , six, false);
 //hardware interupts
@@ -78,11 +79,13 @@ void three(void){
     if(t==1) commandKey(1); 
     else if(t == 2) commandKey(0);
 }  
-//top row 
+//top row   
 
 void four(void){
     int t = b1.tap();
-    if(t==1) dt(2); 
+    if(t==1) dt(2);
+    else if(t == 2)  dt(3);
+     
 }
 void five(void){
     int t = b2.tap();
@@ -180,7 +183,10 @@ void ar(int a){
 void dt(int a){  
     if(a == 0) Keyboard.press(KEY_TAB); 
     else if(a == 1) Keyboard.press(KEY_RETURN);  
-    else if(a == 2) Keyboard.press(KEY_BACKSPACE);  
+    else if(a >= 2)   {
+      if(a == 3) Keyboard.press(KEY_LEFT_ALT);
+      Keyboard.press(KEY_BACKSPACE); 
+    }
     kbrelease();
 } 
 /* 
