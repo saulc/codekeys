@@ -49,54 +49,47 @@ const int d = 11; //release delay
 //interupt callbacks
 void aclick(){ 
     int t = a.tap();
-    if(t==1)  ar(1); //right      
-    else if(t == 2) ar(5);
+    if(t==1)  macro("1");      
+    else if(t == 2) macro("rule #2");
 }
 void bclick(){ 
     int t = b.tap();
-    if(t==1)   ar(3); //down    
-    else if(t==2)  for(int i=0; i<4; i++) ar(3);
+    if(t==1)  macro("2");
 }    
 void cclick(){ 
     int t = c.tap();
-    if(t==1)  ar(0); //left
-    else if(t == 2) ar(4);
+    if(t==1)  macro("3");
 }   
  
  //pin change interupt callbacks
 void one(void){
     int t = a1.tap();
-    if(t==1) commandKey(6);  //
+    if(t==1) macro("4");
 }   
         
 void two(void){
     int t = a2.tap();
-      if(t==1)   commandKey(2);
-    else  if(t == 2) dt(1);
+      if(t==1)   macro("5");
 }
 void three(void){
     int t = a3.tap();
-    if(t==1) commandKey(1); 
-    else if(t == 2) commandKey(0);
+    if(t==1) macro("6");
 }  
 //top row   
 
 void four(void){
     int t = b1.tap();
-    if(t==1) dt(2);
-    else if(t == 2)  dt(3);
+    if(t==1) macro("7");
      
 }
 void five(void){
     int t = b2.tap();
-    if(t==1) ar(2);  //up
-    else if(t==2)  for(int i=0; i<4; i++) ar(2);
+    if(t==1) macro("8");
     
 } 
 void six(void){ 
     int t = b3.tap();
-    if(t==1) dt(0);
-    else if(t == 2)  dt(1);
+    if(t==1) macro("9");
 }   
 
 void setup() { 
@@ -119,48 +112,7 @@ void setup() {
  
 void loop() {  
 //  RGB control goes here lol
-}
-/* 
- * ----------------Short cuts --------------------
- */
-void commandKey(int a){
-  char c = 'x';
-    switch(a){
-      case 0: c = 'x';
-        break;
-      case 1: c = 'c';
-        break;
-      case 2: c = 'v';
-        break;
-        case 3: c = 'd';
-        break; 
-        case 4: c = 'd';    
-        Keyboard.press(KEY_RIGHT_SHIFT); 
-        break;
-        case 5: c = '/';
-        break;
-        case 6: c = 'z';
-        break;  
-        
-    }     
-    
-//    Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz
-//    Keyboard.press(KEY_RIGHT_SHIFT);  //  hold Shift for testing!! 
-    Keyboard.press(KEY_LEFT_GUI);  // press and hold command macOS not X
-    Keyboard.press(c);          
-        kbrelease();
-}
-//change spaces/destops
-void spaceL(){ space(0); }
-void spaceR(){ space(1); }
-void space(int d){   
-  //ctrl shift tab /ctrl tab  - switch chrome tabs left right 
-    Keyboard.press(KEY_LEFT_CTRL);  // press and hold control windoz 
-    if(d==2) Keyboard.press(KEY_UP_ARROW);   //spaces/mission control
-    else    Keyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
-    
-    kbrelease();
-}
+} 
 void ar(int a){
   char c = 'a'; 
   switch(a){
