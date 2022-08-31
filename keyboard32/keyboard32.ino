@@ -11,10 +11,13 @@
 */    
 
 //#include "Keyboard.h"
+#include "analog.h"
 #include "button.h"
 #include <BleKeyboard.h>
 
-BleKeyboard bleKeyboard("Acme 3x3 Keybored");
+analog batt(BATT_MONITOR);
+
+BleKeyboard bleKeyboard("Acme3x3Keybored");
  
 /*   
  *    Don't Change These after pcb setup.
@@ -92,10 +95,9 @@ void IRAM_ATTR six(void){
     else if(t >= 2) ar(4);
 }   
 
+
 void checkBattLevel(){
-  int b = analogRead(BATT_MONITOR);
-  b = map(b, 0, 4095, 0, 100);
-  bleKeyboard.setBatteryLevel(b);
+  bleKeyboard.setBatteryLevel(batt.getVal());
 }
  
 void setup() { 
@@ -127,19 +129,25 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Acme Ble Keys");
   Serial.println("Starting BLE work!");
-  bleKeyboard.begin();
+  bleKeyboard.begin();  
+  checkBattLevel();
 }
- int t = 0;
+ int t = 0, tt = 0;
  volatile int mm = 0;
 void loop() {  
 //  RGB control goes here lol
-  if(t++ >100000){ t = 0;
-  if(bleKeyboard.isConnected())  Serial.println("Connected ...");
-    checkBattLevel();
+  if(t++ >100000){      //don't flood the console, esp32 is fast...
+       t = 0;
+       tt++;
+      if(bleKeyboard.isConnected())  Serial.println("Connected ...");
+
   }
-  if(mm !=0){
-    Serial.println("  key tapped...");
-    mm = 0;
+  if(tt > 2 and mm !=0){
+//    Serial.println("  key tapped...");
+      checkBattLevel();  
+ //updated the battery level if the user tapped a button. (don't wake from sleep)
+       mm = 0;
+       tt = 0;
   }
 }
 /* 
@@ -171,7 +179,8 @@ void commandKey(int a){
 //    bleKeyboard.press(KEY_RIGHT_SHIFT);  //  hold Shift for testing!! 
     bleKeyboard.press(KEY_LEFT_GUI);  // press and hold command macOS not X
     bleKeyboard.press(c);          
-        kbrelease();
+        kbrelease();  
+         mm++; //key pressed flag
 }
 //change spaces/destops
 void spaceL(){ space(0); }
@@ -182,7 +191,8 @@ void space(int d){
     if(d==2) bleKeyboard.press(KEY_UP_ARROW);   //spaces/mission control
     else    bleKeyboard.press( (d==0) ? KEY_LEFT_ARROW : KEY_RIGHT_ARROW);      
     
-    kbrelease();
+    kbrelease();  
+     mm++;
 }
 void ar(int a){
   
@@ -203,7 +213,7 @@ void ar(int a){
   bleKeyboard.release(c);   
   if(a >= 4)  bleKeyboard.release(KEY_LEFT_ALT);
 //  kbrelease();
-  
+   mm++;
 }
  //single key shortcuts
 void dt(int a){  
@@ -218,8 +228,10 @@ void dt(int a){
       bleKeyboard.press(k); 
       bleKeyboard.release(k);   
       if(a > 2)  bleKeyboard.release(KEY_LEFT_ALT);
-    
+    mm++;
 } 
+
+
 /* 
  * ----------------end Short cuts --------------------
  */     
