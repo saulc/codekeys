@@ -66,8 +66,8 @@ void IRAM_ATTR one(void){
         
 void IRAM_ATTR two(void){
     int t = a2.tap();
-    if(t==1) ar(2);  //up
-    else if(t>=2)  for(int i=0; i<4; i++) ar(2);
+    if(t>=1) ar(2);  //up
+//    else if(t>=2)  for(int i=0; i<4; i++) ar(2);
 }
 void IRAM_ATTR three(void){
     int t = a3.tap(); 
@@ -82,8 +82,8 @@ void IRAM_ATTR four(void){
 }
 void IRAM_ATTR five(void){
     int t = b2.tap();
-    if(t==1)   ar(3); //down    
-    else if(t>=2)  for(int i=0; i<4; i++) ar(3);
+    if(t>=1)   ar(3); //down    
+//    else if(t>=2)  for(int i=0; i<4; i++) ar(3);
     
 } 
 void IRAM_ATTR six(void){ 
@@ -91,6 +91,12 @@ void IRAM_ATTR six(void){
     if(t==1)  ar(0); //left
     else if(t >= 2) ar(4);
 }   
+
+void checkBattLevel(){
+  int b = analogRead(BATT_MONITOR);
+  b = map(b, 0, 4095, 0, 100);
+  bleKeyboard.setBatteryLevel(b);
+}
  
 void setup() { 
 //  //turn off the builtin led
@@ -129,6 +135,7 @@ void loop() {
 //  RGB control goes here lol
   if(t++ >100000){ t = 0;
   if(bleKeyboard.isConnected())  Serial.println("Connected ...");
+    checkBattLevel();
   }
   if(mm !=0){
     Serial.println("  key tapped...");
