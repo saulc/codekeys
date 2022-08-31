@@ -7,7 +7,7 @@
   spaceL  mc  spaceR        macOS
   comment uncomment ([0, 0, 0]) 'custom openscad'
   tab/return  copy/cut  paste/paste+return
-
+  
 */    
 
 #include "Keyboard.h"
@@ -21,18 +21,13 @@
  void cclick();
  void aclick();
  void bclick(); 
-
+/*   
+ *    Don't Change These after pcb setup.
+ */
 const int pins[9] = {   2,  3,   7 , 
                         8,  9,   10, 
                         14, 15,  16   };
                       
-//todo software rotate. easy rotate...
-int rp(int i){
-  int n = i;
-    if(n % 3 == 0) 
-  return n;
-}
-
 // pin change interups
 Button a1( pins[3] , one, false);
 Button a2( pins[4] , two, false);
@@ -46,57 +41,62 @@ Button b( pins[1] , bclick, true);
 Button c( pins[2] , cclick, true);
 
 const int d = 11; //release delay
-//interupt callbacks
+
+/*   
+ *    Edit key actions here.
+ */
+//interupt callbacks// top row
 void aclick(){ 
     int t = a.tap();
-    if(t==1)  ar(1); //right      
-    else if(t == 2) ar(5);
+    if(t==1) commandKey(1); 
+    else if(t == 2) commandKey(0);
+   
 }
 void bclick(){ 
     int t = b.tap();
-    if(t==1)   ar(3); //down    
-    else if(t==2)  for(int i=0; i<4; i++) ar(3);
+    if(t==1)   commandKey(2);
+    else  if(t == 2) dt(1);
+    
 }    
 void cclick(){ 
     int t = c.tap();
-    if(t==1)  ar(0); //left
-    else if(t == 2) ar(4);
+    if(t==1) commandKey(6);  //
 }   
  
  //pin change interupt callbacks
+ //middle row
 void one(void){
     int t = a1.tap();
-    if(t==1) commandKey(6);  //
+    if(t==1) dt(0);
+    else if(t == 2)  dt(1);
 }   
         
 void two(void){
     int t = a2.tap();
-      if(t==1)   commandKey(2);
-    else  if(t == 2) dt(1);
+    if(t==1) ar(2);  //up
+    else if(t==2)  for(int i=0; i<4; i++) ar(2);
 }
 void three(void){
-    int t = a3.tap();
-    if(t==1) commandKey(1); 
-    else if(t == 2) commandKey(0);
-}  
-//top row   
-
-void four(void){
-    int t = b1.tap();
-    if(t==1) dt(2);
+    int t = a3.tap(); 
+    if(t==1) dt(2); 
     else if(t == 2)  dt(3);
-     
+}  
+//bottom row  fliped
+void four(void){
+    int t = b1.tap(); 
+    if(t==1)  ar(1); //right      
+    else if(t == 2) ar(5);
 }
 void five(void){
     int t = b2.tap();
-    if(t==1) ar(2);  //up
-    else if(t==2)  for(int i=0; i<4; i++) ar(2);
+    if(t==1)   ar(3); //down    
+    else if(t==2)  for(int i=0; i<4; i++) ar(3);
     
 } 
 void six(void){ 
     int t = b3.tap();
-    if(t==1) dt(0);
-    else if(t == 2)  dt(1);
+    if(t==1)  ar(0); //left
+    else if(t == 2) ar(4);
 }   
 
 void setup() { 
@@ -175,27 +175,32 @@ void ar(int a){
               Keyboard.press(KEY_LEFT_ALT);
               break;
   }
-  Keyboard.press(c);
-  kbrelease();
+  Keyboard.press(c);      
+  Keyboard.release(c);   
+  if(a >= 4)  Keyboard.release(KEY_LEFT_ALT);
+//  kbrelease();
   
 }
  //single key shortcuts
 void dt(int a){  
-    if(a == 0) Keyboard.press(KEY_TAB); 
-    else if(a == 1) Keyboard.press(KEY_RETURN);  
-    else if(a >= 2)   {
-      if(a == 3) Keyboard.press(KEY_LEFT_ALT);
-      Keyboard.press(KEY_BACKSPACE); 
+    int k = 0;
+    switch(a){
+      case 0: k = KEY_TAB;    break;
+      case 1: k = KEY_RETURN;  break;
+      case 3: Keyboard.press(KEY_LEFT_ALT);
+      case 2: k = KEY_BACKSPACE;  break;
+
     }
-    kbrelease();
+      Keyboard.press(k); 
+      Keyboard.release(k);   
+      if(a > 2)  Keyboard.release(KEY_LEFT_ALT);
+    
 } 
 /* 
  * ----------------end Short cuts --------------------
  */     
-
-
  
-//write keystrokes 
+//write keystrokes or just use print
 void macro(String s){
   for(int i=0; i<s.length(); i++)
            Keyboard.write(s[i]); 
