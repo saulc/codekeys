@@ -11,13 +11,18 @@
 */    
 
 //#include "Keyboard.h"
+//#include "NeoLite.h"
 #include "analog.h"
 #include "button.h"
 #include <BleKeyboard.h>
+#include "WiFi.h"
+#include "driver/adc.h"
 
 analog batt(BATT_MONITOR);
 
 BleKeyboard bleKeyboard("Acme3x3Keybored");
+
+//NeoLite rgb(PIN_NEOPIXEL, 1); //PIN_NEOPIXEL
  
 /*   
  *    Don't Change These after pcb setup.
@@ -52,7 +57,7 @@ void IRAM_ATTR bclick(){
     int t = b.tap();
     if(t==1)   commandKey(2);
     else  if(t >= 2) dt(1);
-    
+     
 }    
 void IRAM_ATTR cclick(){ 
     int t = c.tap();
@@ -95,15 +100,33 @@ void IRAM_ATTR six(void){
     else if(t >= 2) ar(4);
 }   
 
+void disableWifi(){
+        adc_power_off();
+    WiFi.disconnect(true);  // Disconnect from the network
+    WiFi.mode(WIFI_OFF);    // Switch WiFi off
+}
 
-void checkBattLevel(){
-  bleKeyboard.setBatteryLevel(batt.getVal());
+bool checkBattLevel(bool update = false){
+  int v = batt.getVal();
+  if(update) bleKeyboard.setBatteryLevel(v);
+  if(v <= 55) return true; //low battery 
+  //if(v < 44)  //enable sleep mode
+  return false;
 }
  
-void setup() { 
+void setup() {  
+  setCpuFrequencyMhz(80);
+  disableWifi();  //need to reduce program size by 11% wtf...
+  checkBattLevel();
 //  //turn off the builtin led
-//  pinMode(13, OUTPUT);
-//  digitalWrite(13, LOW);
+  pinMode(13, OUTPUT);
+  digitalWrite(13, HIGH);
+//  pinMode(NEOPIXEL_I2C_POWER, OUTPUT);
+//  digitalWrite(NEOPIXEL_I2C_POWER, HIGH);
+//    rgb.ini();
+//    rgb.setStyle(1);
+//    rgb.setPower(50);
+  
    //initialize interupts for buttons
    a.ini();
    attachInterrupt(a.getPin(), aclick, FALLING ); 
@@ -126,28 +149,40 @@ void setup() {
    
   // initialize control over the keyboard:
 //  Keyboard.begin();
+  checkBattLevel();
   Serial.begin(115200);
-  Serial.println("Acme Ble Keys");
-  Serial.println("Starting BLE work!");
+  Serial.println(F("Acme Ble Keys"));
+  Serial.println(F("Starting BLE work!"));
   bleKeyboard.begin();  
   checkBattLevel();
+  checkBattLevel(true); //update and show avg battery level
 }
- int t = 0, tt = 0;
- volatile int mm = 0;
+void showCon(){
+    Serial.print(F("3x3 Keybored("));
+    Serial.print(batt.getVal());
+    Serial.println(F("%) is Connected ..."));
+}
+  bool lowBatt = false;
+  int t = 0, tt = 0;
+  volatile int mm = 0; //key pressed flag
 void loop() {  
+//      if(t%10000 == 0) rgb.tik();
 //  RGB control goes here lol
   if(t++ >100000){      //don't flood the console, esp32 is fast...
        t = 0;
        tt++;
-      if(bleKeyboard.isConnected())  Serial.println("Connected ...");
-
+      if(bleKeyboard.isConnected()) showCon();
+//      rgb.setStyle(2);
+      if(!lowBatt) digitalWrite(13, LOW); //keep the light on if the battery is low
   }
   if(tt > 2 and mm !=0){
 //    Serial.println("  key tapped...");
-      checkBattLevel();  
+      lowBatt = checkBattLevel(true);  
  //updated the battery level if the user tapped a button. (don't wake from sleep)
        mm = 0;
        tt = 0;
+//       rgb.setStyle(1);
+      digitalWrite(13, HIGH); //keypress indicator
   }
 }
 /* 
